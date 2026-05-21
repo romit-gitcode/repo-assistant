@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
+import { buildGitHubAuthorizeUrl } from "@/server/auth/github";
+import { createOAuthState, setOAuthStateCookie } from "@/server/auth/session";
 
-export function GET() {
-  return NextResponse.json(
-    { error: "GitHub OAuth is implemented in Step 2." },
-    { status: 501 }
-  );
+export async function GET() {
+  const state = createOAuthState();
+  await setOAuthStateCookie(state);
+
+  return NextResponse.redirect(buildGitHubAuthorizeUrl(state));
 }
