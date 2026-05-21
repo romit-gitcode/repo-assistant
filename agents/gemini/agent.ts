@@ -1,4 +1,4 @@
-import { env } from "@/lib/env";
+import { getGeminiEnv } from "@/lib/env";
 import type { RepositoryRef } from "@/types";
 
 export type AgentMessage = {
@@ -12,7 +12,7 @@ export type RunAgentInput = {
 };
 
 export async function runRepositoryAgent(input: RunAgentInput) {
-  void env.GEMINI_API_KEY;
+  void getGeminiEnv().GEMINI_API_KEY;
   void input;
   throw new Error("Gemini MCP tool loop is implemented in Step 5.");
 }

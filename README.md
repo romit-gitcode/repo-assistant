@@ -103,13 +103,19 @@ Tables:
    NEXT_PUBLIC_APP_URL=http://localhost:3000
    ```
 
-4. Push the Drizzle schema directly to your database:
+4. Create a GitHub OAuth app:
+
+   - Homepage URL: `http://localhost:3000`
+   - Authorization callback URL: `http://localhost:3000/api/auth/github/callback`
+   - Add the generated client id and client secret to `.env.local`.
+
+5. Push the Drizzle schema directly to your database:
 
    ```bash
    npm run db:push
    ```
 
-5. Start development:
+6. Start development:
 
    ```bash
    npm run dev
@@ -131,6 +137,7 @@ Tables:
 - Secure signed session cookie.
 - Server-side GitHub token storage.
 - Current-user helper for API routes.
+- Logout and authenticated API guard rails.
 
 ### Step 3: Repository Management
 
