@@ -145,6 +145,11 @@ Tables:
 - Connect and disconnect repositories.
 - Persist connected repositories with Drizzle.
 - Sidebar repository selector.
+- API routes:
+  - `GET /api/github/repositories`
+  - `GET /api/repositories`
+  - `POST /api/repositories`
+  - `DELETE /api/repositories/:id`
 
 ### Step 4: MCP Integration
 

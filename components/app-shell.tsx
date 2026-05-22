@@ -1,11 +1,13 @@
-import { GitBranch, LogIn, LogOut, MessageSquare, Plus, Search } from "lucide-react";
+import { GitBranch, LogIn, LogOut, MessageSquare, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ChatPanel } from "@/components/chat/chat-panel";
-import { RepositoryList } from "@/components/repositories/repository-list";
+import { RepositoryManager } from "@/components/repositories/repository-manager";
 import { getCurrentUser } from "@/server/auth/session";
+import { listConnectedRepositories } from "@/server/repositories/repositories";
 
 export async function AppShell() {
   const user = await getCurrentUser();
+  const repositories = user ? await listConnectedRepositories(user) : [];
 
   return (
     <main className="min-h-screen bg-background">
@@ -58,17 +60,7 @@ export async function AppShell() {
               <Search className="h-4 w-4" />
               Search connected repos
             </div>
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                  Repositories
-                </h2>
-                <Button size="icon" variant="ghost" aria-label="Add repository">
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-              <RepositoryList />
-            </section>
+            <RepositoryManager isAuthenticated={Boolean(user)} initialRepositories={repositories} />
             <section className="space-y-3">
               <h2 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Chats
