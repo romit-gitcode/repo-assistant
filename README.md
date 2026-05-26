@@ -161,7 +161,9 @@ Tables:
   - `GET /api/repositories/:id/mcp/tools`
   - `POST /api/repositories/:id/mcp/tools`
 
-By default, filesystem MCP is scoped to the project directory. GitHub MCP defaults to GitHub's official Docker image:
+By default, connected repositories use GitHub MCP only. Filesystem MCP is disabled unless `MCP_FILESYSTEM_ROOT` is explicitly set to a local checkout of the selected repository. This prevents the assistant from accidentally analyzing this app's source code when the selected repository is remote.
+
+GitHub MCP defaults to GitHub's official Docker image:
 
 ```bash
 docker run -i --rm \
@@ -178,6 +180,9 @@ Set `MCP_GITHUB_COMMAND` and `MCP_GITHUB_ARGS` if you want to use a locally inst
 - Dynamic MCP tool-calling loop.
 - Repository-grounded system prompt.
 - Retry, summarization, and context trimming.
+- Streaming chat route at `POST /api/chat`.
+- Chat and message persistence with Drizzle.
+- Basic chat UI with repository selector, starter prompts, streamed responses, and MCP tool activity.
 
 ### Step 6: Chat Experience
 

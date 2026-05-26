@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getMcpEnv } from "@/lib/env";
 import { McpClientManager, formatMcpToolResult } from "@/mcp/client-manager";
 import type { SessionUser } from "@/server/auth/session";
 import {
@@ -21,12 +22,16 @@ export async function createRepositoryMcpManager(user: SessionUser, repositoryId
     throw new Error("Repository not found.");
   }
 
+  const filesystemRoot = getMcpEnv().MCP_FILESYSTEM_ROOT;
+
   return new McpClientManager({
     githubToken: accessToken,
     repository: {
       owner: repository.repoOwner,
       name: repository.repoName
-    }
+    },
+    filesystemRoot,
+    enabledServers: filesystemRoot ? ["github", "filesystem"] : ["github"]
   });
 }
 

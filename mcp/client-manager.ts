@@ -17,6 +17,7 @@ export type McpClientConfig = {
     name: string;
   };
   filesystemRoot?: string;
+  enabledServers?: McpServerName[];
 };
 
 type ServerConnection = {
@@ -57,8 +58,8 @@ function getFilesystemServerPath() {
   return binaryPath;
 }
 
-function getFilesystemRoot(configuredRoot: string | undefined) {
-  const root = resolve(configuredRoot || getMcpEnv().MCP_FILESYSTEM_ROOT || process.cwd());
+function getFilesystemRoot(configuredRoot: string) {
+  const root = resolve(configuredRoot);
 
   if (!existsSync(root)) {
     throw new Error(`Filesystem MCP root does not exist: ${root}`);
@@ -123,7 +124,7 @@ export class McpClientManager {
   async listTools() {
     const errors: Error[] = [];
 
-    for (const serverName of ["github", "filesystem"] satisfies McpServerName[]) {
+    for (const serverName of this.getEnabledServers()) {
       try {
         await this.registerServerTools(serverName);
       } catch (error) {
@@ -226,10 +227,18 @@ export class McpClientManager {
 
     return {
       command: getFilesystemServerPath(),
-      args: [getFilesystemRoot(this.config.filesystemRoot)],
+      args: [getFilesystemRoot(this.config.filesystemRoot ?? "")],
       env: getDefaultEnvironment(),
       stderr: "pipe" as const
     };
+  }
+
+  private getEnabledServers(): McpServerName[] {
+    if (this.config.enabledServers?.length) {
+      return this.config.enabledServers;
+    }
+
+    return this.config.filesystemRoot ? ["github", "filesystem"] : ["github"];
   }
 
   private guardToolInput(tool: RegisteredTool, input: Record<string, unknown>) {

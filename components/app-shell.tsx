@@ -72,7 +72,13 @@ export async function AppShell() {
             </section>
           </div>
         </aside>
-        <ChatPanel />
+        <ChatPanel
+          repositories={repositories.map((repository) => ({
+            id: repository.id,
+            repoName: repository.repoName,
+            repoOwner: repository.repoOwner
+          }))}
+        />
       </div>
     </main>
   );
