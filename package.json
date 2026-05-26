@@ -15,6 +15,7 @@
   "dependencies": {
     "@google/genai": "^2.4.0",
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "@modelcontextprotocol/server-filesystem": "^2026.1.14",
     "@neondatabase/serverless": "^1.1.0",
     "@radix-ui/react-scroll-area": "^1.2.0",
     "@radix-ui/react-slot": "^1.2.4",

@@ -156,6 +156,21 @@ Tables:
 - MCP client manager for GitHub and filesystem MCP servers.
 - Tool registry that exposes sanitized tool definitions to the agent.
 - Guardrails for repository-scoped tool calls.
+- Phase 1 exposes read-only MCP tools only. File mutation and GitHub mutation tools are filtered out.
+- Repository-scoped MCP routes:
+  - `GET /api/repositories/:id/mcp/tools`
+  - `POST /api/repositories/:id/mcp/tools`
+
+By default, filesystem MCP is scoped to the project directory. GitHub MCP defaults to GitHub's official Docker image:
+
+```bash
+docker run -i --rm \
+  -e GITHUB_PERSONAL_ACCESS_TOKEN \
+  -e GITHUB_TOOLSETS=default \
+  ghcr.io/github/github-mcp-server
+```
+
+Set `MCP_GITHUB_COMMAND` and `MCP_GITHUB_ARGS` if you want to use a locally installed `github-mcp-server` binary instead of Docker.
 
 ### Step 5: Gemini Agent
 

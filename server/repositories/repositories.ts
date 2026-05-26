@@ -40,6 +40,22 @@ export async function listConnectedRepositories(user: SessionUser) {
     .orderBy(desc(repositories.createdAt));
 }
 
+export async function getConnectedRepository(user: SessionUser, repositoryId: string) {
+  const [repo] = await getDb()
+    .select({
+      id: repositories.id,
+      repoName: repositories.repoName,
+      repoOwner: repositories.repoOwner,
+      githubRepoId: repositories.githubRepoId,
+      createdAt: repositories.createdAt
+    })
+    .from(repositories)
+    .where(and(eq(repositories.id, repositoryId), eq(repositories.userId, user.id)))
+    .limit(1);
+
+  return repo ?? null;
+}
+
 export async function connectRepository(user: SessionUser, input: ConnectRepositoryInput) {
   const [repo] = await getDb()
     .insert(repositories)

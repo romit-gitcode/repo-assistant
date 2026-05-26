@@ -7,6 +7,8 @@ export const toolCallSchema = z.object({
 
 export type RegisteredTool = {
   name: string;
+  serverName: "github" | "filesystem";
+  originalName: string;
   description: string;
   inputSchema: Record<string, unknown>;
 };
@@ -20,6 +22,10 @@ export class ToolRegistry {
 
   list() {
     return Array.from(this.tools.values());
+  }
+
+  get(name: string) {
+    return this.tools.get(name);
   }
 
   sanitizeCall(input: unknown) {

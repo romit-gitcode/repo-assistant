@@ -33,6 +33,13 @@ const sessionEnvSchema = z.object({
   SESSION_SECRET: z.string().min(32)
 });
 
+const mcpEnvSchema = z.object({
+  MCP_FILESYSTEM_ROOT: z.string().optional(),
+  MCP_GITHUB_COMMAND: z.string().optional(),
+  MCP_GITHUB_ARGS: z.string().optional(),
+  MCP_GITHUB_TOOLSETS: z.string().optional()
+});
+
 let cachedEnv: Env | null = null;
 
 export function getEnv() {
@@ -77,5 +84,14 @@ export function getGitHubOAuthEnv() {
 export function getSessionEnv() {
   return sessionEnvSchema.parse({
     SESSION_SECRET: process.env.SESSION_SECRET
+  });
+}
+
+export function getMcpEnv() {
+  return mcpEnvSchema.parse({
+    MCP_FILESYSTEM_ROOT: process.env.MCP_FILESYSTEM_ROOT,
+    MCP_GITHUB_COMMAND: process.env.MCP_GITHUB_COMMAND,
+    MCP_GITHUB_ARGS: process.env.MCP_GITHUB_ARGS,
+    MCP_GITHUB_TOOLSETS: process.env.MCP_GITHUB_TOOLSETS
   });
 }
