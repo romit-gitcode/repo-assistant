@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, desc, eq } from "drizzle-orm";
 import { z } from "zod";
 import { getDb } from "@/db/client";
 import { chats, messages } from "@/db/schema";
@@ -63,6 +63,19 @@ export async function listChatMessages(chatId: string) {
     .from(messages)
     .where(eq(messages.chatId, chatId))
     .orderBy(asc(messages.createdAt));
+}
+
+export async function listUserChats(userId: string) {
+  return getDb()
+    .select({
+      id: chats.id,
+      title: chats.title,
+      repositoryId: chats.repositoryId,
+      createdAt: chats.createdAt
+    })
+    .from(chats)
+    .where(eq(chats.userId, userId))
+    .orderBy(desc(chats.createdAt));
 }
 
 export async function saveMessage(chatId: string, role: "user" | "assistant", content: string) {

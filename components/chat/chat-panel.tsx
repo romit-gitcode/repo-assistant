@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Loader2, SendHorizontal, Sparkles, Wrench } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -18,6 +19,9 @@ type ChatMessage = {
 
 type ChatPanelProps = {
   repositories: ChatRepository[];
+  initialChatId?: string;
+  initialMessages?: ChatMessage[];
+  initialRepositoryId?: string;
 };
 
 const starterPrompts = [
@@ -54,10 +58,11 @@ function parseSseBuffer(buffer: string) {
   };
 }
 
-export function ChatPanel({ repositories }: ChatPanelProps) {
-  const [selectedRepositoryId, setSelectedRepositoryId] = useState(repositories[0]?.id ?? "");
-  const [chatId, setChatId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+export function ChatPanel({ repositories, initialChatId, initialMessages, initialRepositoryId }: ChatPanelProps) {
+  const router = useRouter();
+  const [selectedRepositoryId, setSelectedRepositoryId] = useState(initialRepositoryId ?? repositories[0]?.id ?? "");
+  const [chatId, setChatId] = useState<string | null>(initialChatId ?? null);
+  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages ?? []);
   const [input, setInput] = useState("");
   const [toolActivity, setToolActivity] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -113,6 +118,7 @@ export function ChatPanel({ repositories }: ChatPanelProps) {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let hasReplacedUrl = false;
 
       while (true) {
         const { value, done } = await reader.read();
@@ -127,6 +133,10 @@ export function ChatPanel({ repositories }: ChatPanelProps) {
         for (const event of parsed.events) {
           if (event.event === "meta" && typeof event.data.chatId === "string") {
             setChatId(event.data.chatId);
+            if (!hasReplacedUrl && !initialChatId) {
+              router.replace(`/?chatId=${event.data.chatId}`);
+              hasReplacedUrl = true;
+            }
           }
 
           if (event.event === "tool" && typeof event.data.name === "string") {
@@ -172,10 +182,7 @@ export function ChatPanel({ repositories }: ChatPanelProps) {
   }
 
   function startNewChat() {
-    setChatId(null);
-    setMessages([]);
-    setError(null);
-    setToolActivity(null);
+    router.push("/");
   }
 
   return (
