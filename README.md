@@ -14,7 +14,7 @@ An open-source, MVP web application for chatting with GitHub repositories. It us
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
-│                         Next.js 15 App Router                       │
+│                         Next.js 15 App Router                      │
 │                                                                    │
 │  ┌───────────────┐      ┌────────────────┐      ┌───────────────┐  │
 │  │  Auth Routes  │      │ Repository API │      │   Chat API    │  │
@@ -22,8 +22,8 @@ An open-source, MVP web application for chatting with GitHub repositories. It us
 │  └───────┬───────┘      └───────┬────────┘      └───────┬───────┘  │
 │          │                      │                       │          │
 │  ┌───────▼──────────────────────▼───────────────────────▼───────┐  │
-│  │                         Server Layer                          │  │
-│  │ sessions, GitHub OAuth, repository service, chat service       │  │
+│  │                         Server Layer                         │  │
+│  │ sessions, GitHub OAuth, repository service, chat service     │  │
 │  └───────┬───────┬───────┬───────┬───────┬───────┬───────┬──────┘  │
 │          │       │       │       │       │       │       │         │
 │  ┌───────▼───────┐      ┌───────▼────────┐      ┌───────▼───────┐  │
