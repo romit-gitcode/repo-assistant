@@ -1,8 +1,16 @@
-# AI GitHub Repository Assistant
+# 🤖 AI GitHub Repository Assistant
 
-A production-structured MVP for chatting with GitHub repositories through a Gemini-powered agent that uses MCP tools for repository intelligence.
+An open-source, MVP web application for chatting with GitHub repositories. It uses a **Gemini-powered agent** and the **Model Context Protocol (MCP)** to provide deep intelligence and live context about your code.
 
-## Phase 1 Architecture
+## ✨ Features
+
+- **GitHub OAuth Authentication**: Securely log in using your GitHub account. 
+- **Live Repository Intelligence**: Uses GitHub MCP to directly read repository files, issues, and pull requests in real-time.
+- **Gemini 2.5 Flash Agent**: Fast, streaming AI responses using an intelligent, repository-grounded tool-calling loop.
+- **Chat Persistence**: Chat sessions and messages are saved securely.
+- **Modern Tech Stack**: Built with Next.js 15 (App Router), Tailwind CSS, Drizzle ORM, and Neon PostgreSQL.
+
+## 🏗️ Architecture
 
 ```text
 ┌────────────────────────────────────────────────────────────────────┐
@@ -16,8 +24,8 @@ A production-structured MVP for chatting with GitHub repositories through a Gemi
 │  ┌───────▼──────────────────────▼───────────────────────▼───────┐  │
 │  │                         Server Layer                          │  │
 │  │ sessions, GitHub OAuth, repository service, chat service       │  │
-│  └───────┬──────────────────────┬───────────────────────┬───────┘  │
-│          │                      │                       │          │
+│  └───────┬───────┬───────┬───────┬───────┬───────┬───────┬──────┘  │
+│          │       │       │       │       │       │       │         │
 │  ┌───────▼───────┐      ┌───────▼────────┐      ┌───────▼───────┐  │
 │  │ Drizzle ORM   │      │ Gemini Agent   │      │ MCP Manager   │  │
 │  │ PostgreSQL    │      │ Tool Loop      │      │ Tool Registry │  │
@@ -31,139 +39,72 @@ A production-structured MVP for chatting with GitHub repositories through a Gemi
      └───────────┘          └───────────┘          └─────────────┘
 ```
 
-## Folder Structure
+## 🚀 Getting Started
 
-```text
-app/
-  api/
-    auth/github/
-    chat/
-    repositories/
-  globals.css
-  layout.tsx
-  page.tsx
-agents/
-  gemini/
-components/
-  app-shell.tsx
-  chat/
-  repositories/
-  ui/
-db/
-  client/
-  schema/
-lib/
-  env.ts
-  utils.ts
-mcp/
-  client-manager.ts
-  tool-registry.ts
-server/
-  auth/
-  repositories/
-  rate-limit.ts
-types/
-  index.ts
+### Prerequisites
+
+- Node.js 18+
+- A PostgreSQL Database (e.g., [Neon](https://neon.tech), Supabase, or local Postgres)
+- Docker (required to run the official GitHub MCP server)
+- A Google Gemini API Key
+- A GitHub account (to create an OAuth App)
+
+### 1. Installation
+
+```bash
+git clone https://github.com/yourusername/repo-assistant.git
+cd repo-assistant
+npm install
 ```
 
-## Database Schema
+### 2. Environment Variables
 
-Phase 1 uses Drizzle ORM with PostgreSQL. The schema is defined in [`db/schema/index.ts`](./db/schema/index.ts).
+Copy the `.env.example` file to create your local environment configuration:
 
-Tables:
+```bash
+cp .env.example .env.local
+```
 
-- `users`: GitHub identity profile.
-- `repositories`: repositories connected by a user.
-- `chats`: repository-scoped conversations.
-- `messages`: persisted user and assistant messages.
-- `mcp_cache`: optional repository-scoped MCP result cache.
+Fill in the required variables in `.env.local`:
 
-## Setup
+- `GEMINI_API_KEY`: Get one from [Google AI Studio](https://aistudio.google.com/).
+- `DATABASE_URL`: Your PostgreSQL connection string.
+- `SESSION_SECRET`: Generate a random 32+ character secure string (e.g., `openssl rand -base64 32`).
+- `NEXT_PUBLIC_APP_URL`: Set to `http://localhost:3000` for local development.
 
-1. Install dependencies:
+### 3. GitHub OAuth App Setup
 
-   ```bash
-   npm install
-   ```
+To allow users to log in (including yourself), you need to create a GitHub OAuth App:
+1. Go to your GitHub Developer Settings -> [OAuth Apps](https://github.com/settings/developers).
+2. Click **New OAuth App**.
+3. Set **Homepage URL** to `http://localhost:3000`.
+4. Set **Authorization callback URL** to `http://localhost:3000/api/auth/github/callback`.
+5. Generate the client secret.
+6. Add the Client ID and Client Secret to your `.env.local` as `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`.
 
-2. Copy environment variables:
+*(Note: Once configured, **any** GitHub user can log into your app and chat with their own repositories!)*
 
-   ```bash
-   cp .env.example .env.local
-   ```
+### 4. Database Setup
 
-3. Fill in:
+Push the Drizzle schema directly to your PostgreSQL database:
 
-   ```bash
-   GEMINI_API_KEY=
-   GITHUB_CLIENT_ID=
-   GITHUB_CLIENT_SECRET=
-   DATABASE_URL=
-   SESSION_SECRET=
-   NEXT_PUBLIC_APP_URL=http://localhost:3000
-   ```
+```bash
+npm run db:push
+```
 
-4. Create a GitHub OAuth app:
+### 5. Run the Application
 
-   - Homepage URL: `http://localhost:3000`
-   - Authorization callback URL: `http://localhost:3000/api/auth/github/callback`
-   - Add the generated client id and client secret to `.env.local`.
+Make sure Docker is running on your machine (it is used to spawn the GitHub MCP container), then start the development server:
 
-5. Push the Drizzle schema directly to your database:
+```bash
+npm run dev
+```
 
-   ```bash
-   npm run db:push
-   ```
+Visit `http://localhost:3000` to log in and start chatting!
 
-6. Start development:
+## ⚙️ MCP Integrations
 
-   ```bash
-   npm run dev
-   ```
-
-## Implementation Roadmap
-
-### Step 1: Foundation
-
-- Next.js 15 App Router setup.
-- TailwindCSS and shadcn-compatible UI primitives.
-- Strict TypeScript configuration.
-- Drizzle schema, database client, and push-based database sync config.
-- Production-oriented folder boundaries.
-
-### Step 2: Authentication
-
-- GitHub OAuth authorization and callback routes.
-- Secure signed session cookie.
-- Server-side GitHub token storage.
-- Current-user helper for API routes.
-- Logout and authenticated API guard rails.
-
-### Step 3: Repository Management
-
-- Fetch GitHub repositories using the authenticated user token.
-- Connect and disconnect repositories.
-- Persist connected repositories with Drizzle.
-- Sidebar repository selector.
-- API routes:
-  - `GET /api/github/repositories`
-  - `GET /api/repositories`
-  - `POST /api/repositories`
-  - `DELETE /api/repositories/:id`
-
-### Step 4: MCP Integration
-
-- MCP client manager for GitHub and filesystem MCP servers.
-- Tool registry that exposes sanitized tool definitions to the agent.
-- Guardrails for repository-scoped tool calls.
-- Phase 1 exposes read-only MCP tools only. File mutation and GitHub mutation tools are filtered out.
-- Repository-scoped MCP routes:
-  - `GET /api/repositories/:id/mcp/tools`
-  - `POST /api/repositories/:id/mcp/tools`
-
-By default, connected repositories use GitHub MCP only. Filesystem MCP is disabled unless `MCP_FILESYSTEM_ROOT` is explicitly set to a local checkout of the selected repository. This prevents the assistant from accidentally analyzing this app's source code when the selected repository is remote.
-
-GitHub MCP defaults to GitHub's official Docker image:
+This project uses the Model Context Protocol (MCP) to give the AI agent read-only access to repositories. By default, connected remote repositories use the official GitHub MCP server via Docker:
 
 ```bash
 docker run -i --rm \
@@ -172,28 +113,12 @@ docker run -i --rm \
   ghcr.io/github/github-mcp-server
 ```
 
-Set `MCP_GITHUB_COMMAND` and `MCP_GITHUB_ARGS` if you want to use a locally installed `github-mcp-server` binary instead of Docker.
+*(Note: File mutation and GitHub mutation tools are intentionally filtered out for safety in this MVP).*
 
-### Step 5: Gemini Agent
+## 🤝 Contributing
 
-- Gemini 2.5 Flash streaming adapter.
-- Dynamic MCP tool-calling loop.
-- Repository-grounded system prompt.
-- Retry, summarization, and context trimming.
-- Streaming chat route at `POST /api/chat`.
-- Chat and message persistence with Drizzle.
-- Basic chat UI with repository selector, starter prompts, streamed responses, and MCP tool activity.
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/repo-assistant/issues).
 
-### Step 6: Chat Experience
+## 📝 License
 
-- Streaming chat route.
-- Chat/message persistence.
-- Markdown and code rendering.
-- Responsive Cursor/Linear/Vercel-inspired app shell.
-
-## Phase 1 Tradeoffs
-
-- No vector database: MCP tools provide live repository context for the MVP.
-- No multi-agent orchestration: a single well-scoped agent loop is easier to reason about and safer to ship.
-- Minimal cache: `mcp_cache` exists for expensive MCP responses, but repository truth stays source-of-record in GitHub and files.
-- Vercel-compatible route handlers: long-running MCP sessions may later move to workers if usage grows.
+This project is open-source and available under the [MIT License](LICENSE).
