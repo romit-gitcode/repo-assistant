@@ -94,10 +94,22 @@ npm run db:push
 
 ### 5. Run the Application
 
+You can run the application using either Node.js locally or with Docker.
+
+#### Option A: Run Locally
+
 Make sure Docker is running on your machine (it is used to spawn the GitHub MCP container), then start the development server:
 
 ```bash
 npm run dev
+```
+
+#### Option B: Run with Docker Compose
+
+If you have Docker installed, you can easily build and run the entire application containerized:
+
+```bash
+docker-compose up -d --build
 ```
 
 Visit `http://localhost:3000` to log in and start chatting!
