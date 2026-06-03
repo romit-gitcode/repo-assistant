@@ -7,3 +7,9 @@ dist
 .env.*.local
 *.tsbuildinfo
 .DS_Store
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
