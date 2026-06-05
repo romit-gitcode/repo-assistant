@@ -15,3 +15,23 @@ variable "neon_database_url" {
   type        = string
   sensitive   = true
 }
+
+variable "gemini_api_key" {
+  type      = string
+  sensitive = true
+}
+
+variable "github_client_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "github_client_secret" {
+  type      = string
+  sensitive = true
+}
+
+variable "session_secret" {
+  type      = string
+  sensitive = true
+}
