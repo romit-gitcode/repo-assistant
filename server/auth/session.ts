@@ -28,7 +28,9 @@ function base64UrlDecode(value: string) {
 }
 
 function sign(value: string) {
-  return createHmac("sha256", getSessionEnv().SESSION_SECRET).update(value).digest("base64url");
+  return createHmac("sha256", getSessionEnv().SESSION_SECRET)
+    .update(value)
+    .digest("base64url");
 }
 
 function verifySignature(value: string, signature: string) {
@@ -46,7 +48,7 @@ function verifySignature(value: string, signature: string) {
 function createSessionToken(user: SessionUser) {
   const payload: SessionPayload = {
     ...user,
-    exp: Math.floor(Date.now() / 1000) + sessionMaxAgeSeconds
+    exp: Math.floor(Date.now() / 1000) + sessionMaxAgeSeconds,
   };
   const encodedPayload = base64UrlEncode(JSON.stringify(payload));
 
@@ -56,12 +58,18 @@ function createSessionToken(user: SessionUser) {
 function parseSessionToken(token: string): SessionUser | null {
   const [encodedPayload, signature] = token.split(".");
 
-  if (!encodedPayload || !signature || !verifySignature(encodedPayload, signature)) {
+  if (
+    !encodedPayload ||
+    !signature ||
+    !verifySignature(encodedPayload, signature)
+  ) {
     return null;
   }
 
   try {
-    const payload = JSON.parse(base64UrlDecode(encodedPayload)) as SessionPayload;
+    const payload = JSON.parse(
+      base64UrlDecode(encodedPayload),
+    ) as SessionPayload;
 
     if (!payload.exp || payload.exp < Math.floor(Date.now() / 1000)) {
       return null;
@@ -71,7 +79,7 @@ function parseSessionToken(token: string): SessionUser | null {
       id: payload.id,
       githubId: payload.githubId,
       username: payload.username,
-      avatarUrl: payload.avatarUrl
+      avatarUrl: payload.avatarUrl,
     };
   } catch {
     return null;
@@ -87,9 +95,11 @@ export async function setOAuthStateCookie(state: string) {
   cookieStore.set(oauthStateCookieName, state, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure:
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_APP_URL?.startsWith("https"),
     path: "/",
-    maxAge: oauthStateMaxAgeSeconds
+    maxAge: oauthStateMaxAgeSeconds,
   });
 }
 
@@ -105,13 +115,18 @@ export async function consumeOAuthStateCookie(state: string | null) {
   return Boolean(storedState && storedState === state);
 }
 
-export async function setSessionCookie(response: NextResponse, user: SessionUser) {
+export async function setSessionCookie(
+  response: NextResponse,
+  user: SessionUser,
+) {
   response.cookies.set(sessionCookieName, createSessionToken(user), {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure:
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_APP_URL?.startsWith("https"),
     path: "/",
-    maxAge: sessionMaxAgeSeconds
+    maxAge: sessionMaxAgeSeconds,
   });
 }
 
@@ -119,9 +134,11 @@ export function clearSessionCookie(response: NextResponse) {
   response.cookies.set(sessionCookieName, "", {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure:
+      process.env.NODE_ENV === "production" &&
+      process.env.NEXT_PUBLIC_APP_URL?.startsWith("https"),
     path: "/",
-    maxAge: 0
+    maxAge: 0,
   });
 }
 
