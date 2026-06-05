@@ -16,6 +16,9 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_role.arn
 
+  # IMPORTANT: Docker images are built locally on an Apple Silicon (M-series) Mac.
+  # Fargate defaults to X86_64 (Intel), which causes an "exec format error" crash.
+  # We must explicitly force ARM64 architecture here so AWS provisions the right servers.
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = "ARM64"
