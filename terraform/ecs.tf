@@ -19,6 +19,7 @@ resource "aws_ecs_task_definition" "app" {
   # IMPORTANT: Docker images are built locally on an Apple Silicon (M-series) Mac.
   # Fargate defaults to X86_64 (Intel), which causes an "exec format error" crash.
   # We must explicitly force ARM64 architecture here so AWS provisions the right servers.
+  # The GitHub Actions CI/CD pipeline has been configured to build linux/arm64 to match this.
   runtime_platform {
     operating_system_family = "LINUX"
     cpu_architecture        = "ARM64"
