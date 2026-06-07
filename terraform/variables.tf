@@ -35,3 +35,9 @@ variable "session_secret" {
   type      = string
   sensitive = true
 }
+
+variable "github_repo" {
+  description = "The GitHub repository to trust for OIDC in the format org/repo."
+  type        = string
+  default     = "romit-gitcode/repo-assistant"
+}
